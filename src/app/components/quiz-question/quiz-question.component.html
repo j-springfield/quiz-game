@@ -1,0 +1,14 @@
+<h2>{{question.question}}</h2>
+<ul>
+    <li *ngFor='let choice of choices; let i = index' (click)='selectAnswer(i)'>
+        <input type='radio' name='answer' [checked]='selectedAnswerIndex === i'>
+        {{choice}}
+    </li>
+</ul>
+<div *ngIf='!showResult'>
+    <button (click)='submitAnswer()' [disabled]='selectedAnswerIndex === -1'>Submit</button>
+</div>
+<div *ngIf='showResult'>{{result}}</div>
+<div *ngIf="showResult && !isLastQuestion">
+    <button (click)="goToNextQuestion()">Next Question</button>
+</div>
