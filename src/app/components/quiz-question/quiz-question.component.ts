@@ -8,17 +8,16 @@ import { Question } from '../../models/question';
 })
 export class QuizQuestionComponent {
   @Input() question: Question;
+  @Input() choices: any [];
   @Input() isLastQuestion: boolean;
   @Output() answerSelected = new EventEmitter<number>();
   @Output() nextQuestion = new EventEmitter<void>();
-  choices: any [];
   selectedAnswerIndex: number = -1;
   showResult: boolean;
   result: string;
 
-  ngOnInit() {
+  ngOnChanges() {
     this.randomizeAnswers();
-    console.log(this.question);
   }
 
   selectAnswer(index: number) {
@@ -40,16 +39,19 @@ export class QuizQuestionComponent {
   }
 
   goToNextQuestion() {
+    this.showResult = false;
+    this.selectedAnswerIndex = -1;
     this.nextQuestion.emit();
   }
 
   randomizeAnswers(): void {
-      let answers: any [] = this.question.incorrectAnswers;
-      answers.push(this.question.answer)
-      for (let i = answers.length - 1; i > 0; i--) {
-        const j = Math.floor(Math.random() * (i + 1));
-        [answers[i], answers[j]] = [answers[j], answers[i]];
-      }
-      this.choices = answers;
+    console.log(this.question)
+    let answers: any [] = this.question.incorrectAnswers;
+    answers.push(this.question.answer)
+    for (let i = answers.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [answers[i], answers[j]] = [answers[j], answers[i]];
+    }
+    this.choices = answers;
   }
 }

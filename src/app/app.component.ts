@@ -1,37 +1,59 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { Question } from './models/question';
+import { QuestionService } from './service/question.service';
 
 @Component({
   selector: 'app-root',
   templateUrl: './app.component.html',
   styleUrls: ['./app.component.scss']
 })
-export class AppComponent {
+export class AppComponent implements OnInit {
   title = 'Quiz Game';
-  questionOne: Question = {
-    question: 'Who was the first president of the United States?',
-    answer: 'George Washington',
-    incorrectAnswers: ['Abraham Lincoln', 'John Adams', 'Thomas Jefferson'],
-  }
-  questionTwo: Question = {
-    question: 'What year was the Declaration of Independence signed?',
-    answer: 1776,
-    incorrectAnswers: [1774, 1788, 1812],
-  }
-  questionThree: Question = {
-    question: 'What country gifted the United States with the Statue of Liberty?',
-    answer: 'France',
-    incorrectAnswers: ['England', 'Mexico', 'Spain'],
-  }
 
-  questions = [this.questionOne, this.questionTwo, this.questionThree];
-
+  questions: Question [];
+  isLoading: boolean = true;
   currentQuestionIndex: number = 0;
   showResult: boolean = false;
   totalCorrect: number = 0;
 
-  handleAnswerSelected(isCorrect: boolean) {
-    if (isCorrect) this.totalCorrect++;
+  constructor(private questionService: QuestionService) {}
+
+  ngOnInit(): void {
+    this.questions = this.getFormattedQuestionData()
+  }
+
+  // getQuizData() {
+  //   this.questions = this.questionService.getFormattedQuestionData();
+  // }
+
+  getFormattedQuestionData(): Array<Question> {
+    let questions: Array<Question> = new Array<Question>;
+    this.questionService.getQuestionData().subscribe(
+      (data: any) => {
+        if (data.results) {
+          this.isLoading = false;
+          data.results.map((result: { question: string; correct_answer: any; incorrect_answers: any[]; }) => {
+            let question: Question = {
+              question: '',
+              answer: null,
+              incorrectAnswers: []
+            };
+            question.question = result.question;
+            question.answer = result.correct_answer;
+            question.incorrectAnswers = result.incorrect_answers;
+            questions.push(question);
+          });
+        }
+      },
+      (error) => {
+        console.error('Failed to fetch quiz data: ', error);
+      }
+    );
+    return questions;
+  }
+
+  handleAnswerSelected(result: number) {
+    if (result === 1) this.totalCorrect++;
     this.showResult = true;
   }
 

@@ -1,3 +1,13 @@
 <h1>{{title}}</h1>
 <h2>History</h2>
-<app-quiz-question [question]='questionOne'></app-quiz-question>
+<div *ngIf='!isLoading; else loading'>
+    <app-quiz-question
+        [question]='questions[currentQuestionIndex]'
+        [isLastQuestion]='isLastQuestion()'
+        (answerSelected)='handleAnswerSelected($event)'
+        (nextQuestion)='goToNextQuestion()'
+    ></app-quiz-question>
+</div>
+<ng-template #loading>Loading...</ng-template>
+
+<p>Total Correct Answers: {{ totalCorrect }}</p>
