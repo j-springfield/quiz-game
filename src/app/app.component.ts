@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import { Store } from '@ngrx/store';
 import { Question } from './models/question';
 import { QuestionService } from './service/question.service';
 
